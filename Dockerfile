@@ -1,0 +1,14 @@
+FROM maven:3.8.5-openjdk-17-slim
+
+VOLUME /tmp
+
+LABEL ${LABLE_GROUP}="${LABLE_ID}"
+
+LABEL description="${LABLE_DESCRIPTION}"
+
+COPY ${JAR_NAME_TO_RUN} /${JAR_NAME_TO_RUN}
+
+EXPOSE ${PORT_TO_EXPOSE}
+
+ENTRYPOINT ["java", "-jar", "/${JAR_NAME_TO_RUN}"]
+

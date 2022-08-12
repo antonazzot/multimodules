@@ -1,0 +1,72 @@
+version: '3'
+
+services:
+    dockerdb:
+        image: postgres:14.2-alpine
+        container_name: dockerdbcontainer
+        ports:
+        - 5436:5432
+        volumes:
+#         - ./sql/create.sql:/docker-entrypoint-initdb.d/create.sql
+        - ./pg_data_docker_test:/var/lib/postgresql/data/pg_data
+        environment:
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_DB: JMP
+            PGDATA: /var/lib/postgresql/data/pg_data
+        restart: always
+
+    common:
+        build: ./business-service/common
+        image: common
+        container_name: common_container
+        ports:
+            - 8222:8222
+        restart: always
+        depends_on:
+            - dockerdb
+        restart: always
+
+    one:
+        build: ./business-service/one
+        image: one
+        container_name: one_container
+        ports:
+            - 8333:8333
+        restart: always
+        depends_on:
+            - dockerdb
+        restart: always
+
+    two:
+        build: ./business-service/two
+        image: two
+        container_name: two_container
+        ports:
+            - 8444:8444
+        restart: always
+        depends_on:
+            - dockerdb
+        restart: always
+
+    apigateway:
+        build: ./platform-service/apigateway
+        image: apigateway
+        container_name: apigateway_container
+        ports:
+            - 8111:8111
+        restart: always
+        depends_on:
+            - dockerdb
+        restart: always
+
+    discovery:
+        build: ./platform-service/discovery
+        image: discovery
+        container_name: discovery_container
+        ports:
+            - 8761:8761
+        restart: always
+        depends_on:
+            - dockerdb
+        restart: always
